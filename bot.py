@@ -149,7 +149,7 @@ async def ban_error(ctx, error):
 async def mute(ctx, member: discord.Member):
 	await ctx.channel.purge( limit = 1)
 
-	mute_role = discord.utilus.get(ctx.message.guild.roles, name = 'MUTE')
+	mute_role = discord.utils.get(ctx.message.guild.roles, name = 'MUTE')
 
 	await member.add_roles( mute_role)
 	await ctx.send(f'У {member.mention}, ограничение чата, потому что админам так захотелось!')
