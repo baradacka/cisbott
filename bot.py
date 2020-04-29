@@ -1,6 +1,7 @@
 import discord 
 from discord.ext import commands
 from discord.utils import get
+import os
 
 client = commands.Bot( command_prefix = '.' )
 client.remove_command('help')
@@ -201,6 +202,7 @@ async def leave(ctx):
 
 
 
-token = open( 'token.txt', 'r').readline()
+#token = open( 'token.txt', 'r').readline()
+token = os.environ.get('BOT_TOKEN')
 
-client.run( token )
+client.run(str(token) )
