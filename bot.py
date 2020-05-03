@@ -5,6 +5,7 @@ import os
 
 client = commands.Bot( command_prefix = '.' )
 client.remove_command('help')
+bad_words = ['пидр', 'нигер', 'пидор', 'черный', 'пидарас', 'нигеры']
 
 
 
