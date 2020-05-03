@@ -177,6 +177,17 @@ async def send(ctx):
 
 #async def send1(ctx, member: discord.Member):
 	#await member.send()
+	
+
+@client.event
+async def on_message(message):
+	await client.process_commands(message)
+
+	msg = message.content.lower()
+
+	if msg in bad_words:
+		await message.delete()
+		await message.channel.send(f'{message.author.mention} еще раз напишешь, кикну!')
 
 #voice
 
