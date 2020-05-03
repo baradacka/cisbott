@@ -188,7 +188,7 @@ async def on_message(message):
 
 	if msg in bad_words:
 		await message.delete()
-		await message.channel.send(f'{message.author.mention} еще раз напишешь, кикну!')
+		await message.channel.send(f'{message.author.mention} ахуел,не выражайся так больше!')
 
 #voice
 
