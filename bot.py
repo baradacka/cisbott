@@ -6,7 +6,7 @@ import os
 client = commands.Bot( command_prefix = '.' )
 client.remove_command('help')
 bad_words = ['пидр', 'нигер', 'пидор', 'черный', 'пидарас', 'нигеры']
-
+stack = ['сетка']
 
 
 @client.event
@@ -189,6 +189,21 @@ async def on_message(message):
 	if msg in bad_words:
 		await message.delete()
 		await message.channel.send(f'{message.author.mention} ахуел,не выражайся так больше!')
+		
+		
+@client.event
+async def on_message(message):
+	emb = discord.Embed( title = 'сетка', colour = discord.Color.green())
+	await client.process_commands(message)
+
+
+	msg = message.content.lower()
+
+	if msg in stack:
+
+		emb.set_image( url = 'https://media.discordapp.net/attachments/537651980026249240/706929888333922314/qeRlK051GMFsovYSDC5PCQ.jpeg?width=1204&height=677')
+
+		await message.channel.send(embed = emb)
 
 #voice
 
