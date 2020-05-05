@@ -210,7 +210,7 @@ async def on_message(message):
 
 	if msg in stack:
 
-		emb.set_image( url = 'https://media.discordapp.net/attachments/537651980026249240/706929888333922314/qeRlK051GMFsovYSDC5PCQ.jpeg?width=1204&height=677')
+		emb.set_image( url = 'https://media.discordapp.net/attachments/537651980026249240/707297411394961468/qeRlK051GMFsovYSDC5PCQ.jpeg?width=1204&height=677')
 
 		await message.channel.send(embed = emb)
 
