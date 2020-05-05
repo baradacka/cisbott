@@ -61,6 +61,15 @@ async def on_member_join(member):
 	role = discord.utils.get(member.guild.roles, id = 653996061152509962,)
 	await member.add_roles(role)
 	await channel.send(f'**{member.mention}** залетает на сервер **{guild.name}**')
+	
+	
+@client.event
+async def on_member_join(member):
+	guild = member.guild
+	channel = discord.utils.find(lambda c: c.id == 543154416367304704, guild.text_channels)
+	#role = discord.utils.get(member.guild.roles, id = 653996061152509962,)
+	#await member.add_roles(role)
+	await channel.send(f'**{member.mention}** залетает на сервер **{guild.name}**')
 
 
 @client.event
