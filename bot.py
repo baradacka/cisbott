@@ -49,34 +49,46 @@ async def help(ctx):
 #лив и заход
 @client.event
 async def on_member_join(member):
-	guild = member.guild
-	channel = discord.utils.find(lambda c: c.id == 702821220399448176, guild.text_channels)
-	await channel.send(f'**{member.mention}** залетает на сервер **{guild.name}**')
-	
-#eseentenal	
-@client.event
-async def on_member_join(member):
-	guild = member.guild
-	channel = discord.utils.find(lambda c: c.id == 653996740919296000, guild.text_channels)
-	role = discord.utils.get(member.guild.roles, id = 653996061152509962,)
-	await member.add_roles(role)
-	await channel.send(f'**{member.mention}** залетает на сервер **{guild.name}**')
-	
-	
-@client.event
-async def on_member_join(member):
-	guild = member.guild
-	channel = discord.utils.find(lambda c: c.id == 543154416367304704, guild.text_channels)
-	#role = discord.utils.get(member.guild.roles, id = 653996061152509962,)
-	#await member.add_roles(role)
-	await channel.send(f'**{member.mention}** залетает на сервер **{guild.name}**')
+	if member.guild.id == 702819565385678878: # main
+		guild = member.guild
+		channel = discord.utils.find(lambda c: c.id == 702821220399448176, guild.text_channels)
+		role = discord.utils.get(member.guild.roles, id = 706516091190640651,)
+		await member.add_roles(role)
+		await channel.send(f'**{member.mention}** залетает на сервер **{guild.name}**')
+
+	elif member.guild.id == 653994383062073400: # essentenal
+		guild = member.guild
+		channel = discord.utils.find(lambda c: c.id == 653996740919296000, guild.text_channels)
+		role = discord.utils.get(member.guild.roles, id = 653996061152509962,)
+		await member.add_roles(role)
+		await channel.send(f'**{member.mention}** залетает на сервер **{guild.name}**')
+
+	elif member.guild.id == 537651980026249236: # kolins
+		guild = member.guild
+		channel = discord.utils.find(lambda c: c.id == 543154416367304704, guild.text_channels)
+		#role = discord.utils.get(member.guild.roles, id = 653996061152509962,)
+		#await member.add_roles(role)
+		await channel.send(f'**{member.mention}** залетает на сервер **{guild.name}**')
+
+	elif member.guild.id == 713145524018217010: # mafia server
+		guild = member.guild
+		channel = discord.utils.find(lambda c: c.id == 713146000734290021, guild.text_channels)
+		role = discord.utils.get(member.guild.roles, id = 713149193169928274,)
+		await member.add_roles(role)
+		await channel.send(f'**{member.mention}** залетает на сервер **{guild.name}**')
 
 
 @client.event
 async def on_member_leave(member):
-	guild = member.guild
-	channel = discord.utils.find(lambda c: c.id == 702821220399448176, guild.text_channels)
-	await channel.send(f'**{member.mention}** съебался с нашего сервака **{guild.name}**')
+	if member.guild.id == 537651980026249236:
+		guild = member.guild
+		channel = discord.utils.find(lambda c: c.id == 702821220399448176, guild.text_channels)
+		await channel.send(f'**{member.mention}** съебался с нашего сервака **{guild.name}**')
+
+	elif member.guild.id == 713145524018217010: # maf
+		guild = member.guild
+		channel = discord.utils.find(lambda c: c.id == 713146000734290021, guild.text_channels)
+		await channel.send(f'**{member.mention}** съебался с нашего сервака **{guild.name}**')
 
 
 
