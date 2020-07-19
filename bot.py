@@ -52,8 +52,8 @@ async def on_member_join(member):
 	if member.guild.id == 702819565385678878: # main
 		guild = member.guild
 		channel = discord.utils.find(lambda c: c.id == 702821220399448176, guild.text_channels)
-		role = discord.utils.get(member.guild.roles, id = 706516091190640651,)
-		await member.add_roles(role)
+		#role = discord.utils.get(member.guild.roles, id = 706516091190640651,)
+		#await member.add_roles(role)
 		await channel.send(f'**{member.mention}** залетает на сервер **{guild.name}**')
 
 	elif member.guild.id == 653994383062073400: # essentenal
