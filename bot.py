@@ -8,12 +8,39 @@ client.remove_command('help')
 bad_words = ['пидр', 'нигер', 'пидор', 'черный', 'пидарас', 'нигеры','хач','гей,']
 stack = ['сетка']
 
+connection = sqlite3.connect('server db')
+cursor = connection.cursor()
+
 
 @client.event
-
 async def on_ready():
-	print ( 'bot connected' )
+	cursor.execute("""CREATE TABLE if NOT EXISTS users (
+		name TEXT,
+		id INT,
+		cash BIGINT,
+		rep INT,
+		lvl INT
+	)""")
+	connection.commit()
+
+	cursor.execute("""CREATE TABLE if NOT EXISTS shop (
+		role_id INT,
+		id INT,
+		cost BIGINT
+	)""")
+
+	for guild in client.guilds:
+		async for member in guild.fetch_members():
+			if cursor.execute(f"SELECT id FROM users WHERE id = {member.id}").fetchone() is None:
+				sql = f"""INSERT INTO users (name, id, cash, rep, lvl) VALUES ('{str(member.name).replace("'", "", 20)}', {member.id}, 0, 0, 1 )"""
+				cursor.execute(sql)
+				connection.commit()
+			else:	
+ 				pass
+
+	print ('bot connected')
 	await client.change_presence(status = discord.Status.online, activity = discord.Game('шахте'))
+	
 
 
 
@@ -35,15 +62,142 @@ async def help(ctx):
 	await ctx.channel.purge( limit = 1)
 
 
+	emb = discord.Embed( title = 'CIS команды ',colour = discord.Color.blue())
 	emb.add_field(name = '**clear**',value = '```Очистка чата\n(для админов)```')
 	emb.add_field(name = '**kick**',value = '```Кик пользователя\n(для админов)```')
 	emb.add_field(name = '**ban**',value = '```Бан пользователя\n(для админов)```')
 	emb.add_field(name = '**mute**',value = '```Мут пользователя\n(для админов)```')
+	emb.add_field(name = '**award**',value = '```Выдать баллы\n(для админов)```')
+	emb.add_field(name = '**take**',value = '```Забрать баллы\n(для админов)```')
+	emb.add_field(name = '**addshop**',value = '```Добавить в магазин роль за баллы\n(для админов)```')
+	emb.add_field(name = '**removeshop**',value = '```Убрать роль из магазина за баллы\n(для админов)```')
+	emb.add_field(name = '**balance**',value = '```Посмотреть баланс```')
+	emb.add_field(name = '**shop**',value = '```Посмотреть магазин```')
+	emb.add_field(name = '**buy @роль**',value = '```купить роль```')
 	emb.add_field(name = '**join**',value = '```В разработке```')
 	emb.set_footer(text = 'Спасибо за использование нашего бота')
 	emb.set_thumbnail(url = client.user.avatar_url)
 
 	await ctx.send( embed = emb)
+	
+@client.command(pass_context = True)	
+async def balance(ctx,member: discord.Member = None):
+	await ctx.channel.purge( limit = 1)
+	if member is None:
+
+		sql = f"SELECT cash FROM users WHERE id = {ctx.author.id}"
+		user_balance = cursor.execute(sql).fetchone()[0]
+		await ctx.send(embed = discord.Embed(
+			description = f"Баланс пользователя **{ctx.author}** составляет **{user_balance}**"))
+	else:
+		sql = f"SELECT cash FROM users WHERE id = {member.id}"
+		user_balance = cursor.execute(sql).fetchone()[0]
+		await ctx.send(embed = discord.Embed(
+			description = f"Баланс пользователя **{member}** составляет **{user_balance}**"))
+
+
+@client.command(pass_context = True)
+@commands.has_permissions( administrator = True )
+async def award(ctx,member: discord.Member = None, amount: int = None):
+
+	if member is None:
+		await ctx.send(f"**{ctx.author}**, укажите пользователя")
+	else:
+		if amount is None:
+			await ctx.send(f"**{ctx.author}**, укажите сумму")
+		elif amount < 1:
+			await ctx.send(f"**{ctx.author}**, слишком маленькая сумма")
+		else:
+			cursor.execute("UPDATE users SET cash = cash + {} WHERE id = {}".format(amount,member.id))
+			connection.commit()
+
+			await ctx.message.add_reaction('✅')
+
+@client.command(pass_context = True)
+@commands.has_permissions( administrator = True )
+async def take(ctx,member: discord.Member = None, amount = None):
+	
+	if member is None:
+		await ctx.send(f"**{ctx.author}**, укажите пользователя")
+	else:
+		if amount is None:
+			await ctx.send(f"**{ctx.author}**, укажите сумму")
+		elif amount == 'all':
+			cursor.execute("UPDATE users SET cash = {} WHERE id = {}".format(0,member.id))
+			connection.commit()
+
+			await ctx.message.add_reaction('✅')
+
+		elif int(amount) < 1:
+			await ctx.send(f"**{ctx.author}**, слишком маленькая сумма")
+		else:
+			cursor.execute("UPDATE users SET cash = cash - {} WHERE id = {}".format(amount,member.id))
+			connection.commit()
+
+			await ctx.message.add_reaction('✅')
+
+
+
+@client.command(pass_context = True)
+@commands.has_permissions( administrator = True )
+async def addshop(ctx,role: discord.Role = None, cost: int = None):
+	if role is None:
+		await ctx.send(f"**{ctx.author}**, укажите роль")
+	else:
+		if cost is None:
+			await ctx.send(f"**{ctx.author}**, укажите стоимость")
+		elif cost < 0:
+			await ctx.send(f"**{ctx.author}**,стоимость не может быть меньше 0")
+		else:
+			cursor.execute("INSERT INTO shop VALUES ({}, {}, {})".format(role.id, ctx.guild.id,cost))
+			connection.commit()
+
+			await ctx.message.add_reaction('✅')
+
+@client.command(pass_context = True)
+@commands.has_permissions( administrator = True )
+async def removeshop(ctx,role: discord.Role = None):
+	if role is None:
+		await ctx.send(f"**{ctx.author}**, укажите роль")
+	else:
+		cursor.execute("DELETE FROM shop WHERE role_id = {}".format(role.id))
+		connection.commit()
+
+		await ctx.message.add_reaction('✅')
+
+
+
+@client.command(pass_context = True)
+async def shop(ctx):
+	embed = discord.Embed(title = 'Магазин ролей')
+
+	for row in cursor.execute("SELECT role_id, cost FROM shop WHERE id = {}".format(ctx.guild.id)):
+		if ctx.guild.get_role(row[0]) != None:
+			embed.add_field(
+				name = f"Стоимость **{row[1]}**:dollar:",
+				value = f"Вы купите роль {ctx.guild.get_role(row[0]).mention}",
+				inline = False 
+			)
+		else:
+			pass
+	await ctx.send(embed = embed)
+
+
+@client.command(pass_context = True)
+async def buy(ctx, role: discord.Role = None):
+	if role is None:
+		await ctx.send(f"**{ctx.author}**, укажите роль")
+	else:
+		if role in ctx.author.roles:
+			await ctx.send(f"**{ctx.author}**, у вас есть такая роль")
+		elif cursor.execute("SELECT cost FROM shop WHERE role_id = {}".format(role.id)).fetchone()[0] > cursor.execute("SELECT cash FROM users WHERE id = {}".format(ctx.author.id)).fetchone()[0]:
+			await ctx.send(f"**{ctx.author}**, у вас недостаточно средтсв для данной покупки,вы бомж")
+		else:
+			await ctx.author.add_roles(role)
+			cursor.execute("UPDATE users SET cash = cash - {0} WHERE id = {1}".format(cursor.execute("SELECT cost FROM shop WHERE role_id = {}".format(role.id)).fetchone()[0], ctx.author.id))
+			connection.commit()
+
+			await ctx.message.add_reaction('✅')
 
 	
 #лив и заход
@@ -76,6 +230,12 @@ async def on_member_join(member):
 		role = discord.utils.get(member.guild.roles, id = 713149193169928274,)
 		await member.add_roles(role)
 		await channel.send(f'**{member.mention}** залетает на сервер **{guild.name}**')
+		
+	if cursor.execute(f"SELECT id FROM users WHERE id = {member.id}").fetchone() is None:
+		cursor.execute(f"INSERT INTO users VALUES ('{member}', {member.id}, 0, 0, 1)")
+		connection.commit()
+	else:
+ 		pass
 
 
 @client.event
