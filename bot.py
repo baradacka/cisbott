@@ -2,7 +2,11 @@ import discord
 from discord.ext import commands
 from discord.utils import get
 import os
-import sqlite3 
+import sqlite3
+import pymysql
+ 
+con = pymysql.connect('eu-cdbr-west-03.cleardb.net', 'bc8a069d8ea12b', 
+	'3b7fdfd2', 'heroku_764ae34f273e414')
 
 
 client = commands.Bot( command_prefix = '.' )
