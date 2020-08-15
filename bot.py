@@ -25,7 +25,8 @@ async def on_ready():
 		id INT,
 		cash BIGINT,
 		rep INT,
-		lvl INT
+		lvl INT,
+		server_id INT
 	)""")
 	connection.commit()
 
@@ -38,7 +39,7 @@ async def on_ready():
 	for guild in client.guilds:
 		async for member in guild.fetch_members():
 			if cursor.execute(f"SELECT id FROM users WHERE id = {member.id}").fetchone() is None:
-				sql = f"""INSERT INTO users (name, id, cash, rep, lvl) VALUES ('{str(member.name).replace("'", "", 20)}', {member.id}, 0, 0, 1 )"""
+				sql = f"""INSERT INTO users (name, id, cash, rep, lvl) VALUES ('{str(member.name).replace("'", "", 20)}', {member.id}, 0, 0, 1, {guild.id} )"""
 				cursor.execute(sql)
 				connection.commit()
 			else:	
@@ -238,7 +239,7 @@ async def on_member_join(member):
 		await channel.send(f'**{member.mention}** залетает на сервер **{guild.name}**')
 		
 	if cursor.execute(f"SELECT id FROM users WHERE id = {member.id}").fetchone() is None:
-		cursor.execute(f"INSERT INTO users VALUES ('{member}', {member.id}, 0, 0, 1)")
+		cursor.execute(f"INSERT INTO users VALUES ('{member}', {member.id}, 0, 0, 1, {member.guild.id})")
 		connection.commit()
 	else:
  		pass
