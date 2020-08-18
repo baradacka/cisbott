@@ -89,16 +89,17 @@ async def help(ctx):
 	
 @client.command(pass_context = True)	
 async def balance(ctx,member: discord.Member = None):
-	await ctx.channel.purge( limit = 1)
+	cursor = con.cursor()
 	if member is None:
-
-		sql = f"SELECT cash FROM users WHERE id = {ctx.author.id}"
-		user_balance = cursor.execute(sql)[0]
+		sql = f"SELECT cash FROM users WHERE id = {ctx.author.id} AND server = {ctx.message.guild.id}"
+		user_balance = cursor.execute(sql)
+		cursor.close()
 		await ctx.send(embed = discord.Embed(
 			description = f"Баланс пользователя **{ctx.author}** составляет **{user_balance}**"))
 	else:
 		sql = f"SELECT cash FROM users WHERE id = {member.id}"
-		user_balance = cursor.execute(sql)[0]
+		user_balance = cursor.execute(sql)
+		cursor.close()
 		await ctx.send(embed = discord.Embed(
 			description = f"Баланс пользователя **{member}** составляет **{user_balance}**"))
 
