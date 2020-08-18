@@ -38,7 +38,7 @@ async def on_ready():
 
 	for guild in client.guilds:
 		async for member in guild.fetch_members():
-			if cursor.execute(f"SELECT id FROM users WHERE id = {member.id}").fetchone() is None:
+			if cursor.execute(f"SELECT id FROM users WHERE id = {member.id}") is None:
 				sql = f"""INSERT INTO users (name, id, cash, rep, lvl) VALUES ('{str(member.name).replace("'", "", 20)}', {member.id}, 0, 0, 1)"""
 				cursor.execute(sql)
 				connection.commit()
@@ -93,12 +93,12 @@ async def balance(ctx,member: discord.Member = None):
 	if member is None:
 
 		sql = f"SELECT cash FROM users WHERE id = {ctx.author.id}"
-		user_balance = cursor.execute(sql).fetchone()[0]
+		user_balance = cursor.execute(sql)[0]
 		await ctx.send(embed = discord.Embed(
 			description = f"Баланс пользователя **{ctx.author}** составляет **{user_balance}**"))
 	else:
 		sql = f"SELECT cash FROM users WHERE id = {member.id}"
-		user_balance = cursor.execute(sql).fetchone()[0]
+		user_balance = cursor.execute(sql)[0]
 		await ctx.send(embed = discord.Embed(
 			description = f"Баланс пользователя **{member}** составляет **{user_balance}**"))
 
@@ -197,11 +197,11 @@ async def buy(ctx, role: discord.Role = None):
 	else:
 		if role in ctx.author.roles:
 			await ctx.send(f"**{ctx.author}**, у вас есть такая роль")
-		elif cursor.execute("SELECT cost FROM shop WHERE role_id = {}".format(role.id)).fetchone()[0] > cursor.execute("SELECT cash FROM users WHERE id = {}".format(ctx.author.id)).fetchone()[0]:
+		elif cursor.execute("SELECT cost FROM shop WHERE role_id = {}".format(role.id))[0] > cursor.execute("SELECT cash FROM users WHERE id = {}".format(ctx.author.id))[0]:
 			await ctx.send(f"**{ctx.author}**, у вас недостаточно средтсв для данной покупки,вы бомж")
 		else:
 			await ctx.author.add_roles(role)
-			cursor.execute("UPDATE users SET cash = cash - {0} WHERE id = {1}".format(cursor.execute("SELECT cost FROM shop WHERE role_id = {}".format(role.id)).fetchone()[0], ctx.author.id))
+			cursor.execute("UPDATE users SET cash = cash - {0} WHERE id = {1}".format(cursor.execute("SELECT cost FROM shop WHERE role_id = {}".format(role.id))[0], ctx.author.id))
 			connection.commit()
 
 			await ctx.message.add_reaction('✅')
@@ -238,7 +238,7 @@ async def on_member_join(member):
 		await member.add_roles(role)
 		await channel.send(f'**{member.mention}** залетает на сервер **{guild.name}**')
 		
-	if cursor.execute(f"SELECT id FROM users WHERE id = {member.id}").fetchone() is None:
+	if cursor.execute(f"SELECT id FROM users WHERE id = {member.id}") is None:
 		cursor.execute(f"INSERT INTO users VALUES ('{member}', {member.id}, 0, 0, 1)")
 		connection.commit()
 	else:
